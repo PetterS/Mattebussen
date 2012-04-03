@@ -94,8 +94,9 @@ class MainPage(webapp2.RequestHandler):
         </div>
         <div style="color: #333333; font-family: Arial; font-size: 8pt;">
         ''')
-        self.response.out.write('Best 171 : ' +  str(best[buss171]) + '<br/>\n' )
-        self.response.out.write('Best 169 : '+ str(best[buss169]) + '<br/>\n' )
+        self.response.out.write('Denna sida visar vilken buss som just nu är bäst att ta från Matematikhuset till Malmö<br/>')
+        self.response.out.write('Bästa 171 : ' +  str(best[buss171]) + '<br/>\n' )
+        self.response.out.write('Bästa 169 : '+ str(best[buss169]) + '<br/>\n' )
         self.response.out.write('''
         </div>
         </div>
