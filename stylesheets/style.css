@@ -33,3 +33,19 @@ margin-left:auto;
 margin-right:auto;	
 height:395px;/* flash height*/
 }
+
+#number {
+    color: #9c6114;
+    font-family: Arial; 
+    font-size: 220pt; 
+    line-height: 220pt;
+    font-weight: bold;
+}
+
+#info {
+    color: #FFFFFF;
+    text-align: left;
+     font-family: Arial; 
+     font-size: 10pt;
+     padding-left: 150px;
+}
