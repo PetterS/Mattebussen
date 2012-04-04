@@ -5,6 +5,10 @@ from xml.dom.minidom import parseString
 from datetime import datetime, timedelta
 
 class MainPage(webapp2.RequestHandler):
+    
+    def get_bus(no, lage, delay) :
+        pass
+
     def get(self):
         self.response.headers['Content-Type'] = 'text/html'
         
