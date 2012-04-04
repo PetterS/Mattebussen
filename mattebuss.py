@@ -44,44 +44,7 @@ class MainPage(webapp2.RequestHandler):
         <title>Mattebussen</title>
         <meta http-equiv="Content-Language" content="sv" />
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <script type="text/javascript" src="swfobject.js"></script>
-        <style type="text/css">
-        body {
-            margin-left: 0px;
-            margin-top: 0px;
-            margin-right: 0px;
-            margin-bottom: 0px;
-        }
-
-        html {
-        height:100%
-        }
-
-        html,body {
-        margin:0;padding:0;
-        }
-
-        body{
-        text-align: center;
-        min-width:650px;
-        background-color: #000080;
-        }
-
-        #vertical{	
-        position:absolute;
-        top:50%;	
-        margin-top:-130px;/* half flash height*/	
-        left:0;
-        width:100%;
-        }
-
-        #hoz {
-        width:624px;/* flash width*/
-        margin-left:auto;
-        margin-right:auto;	
-        height:395px;/* flash height*/
-        }
-        </style>
+        <link rel="stylesheet" type="text/css" href="/stylesheets/style.css"/>
         </head>
         <body>
         <div id="vertical">   
