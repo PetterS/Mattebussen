@@ -53,6 +53,7 @@ class MainPage(webapp2.RequestHandler):
         <title>Mattebussen</title>
         <meta http-equiv="Content-Language" content="sv" />
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="refresh" content="5">
         <link rel="stylesheet" type="text/css" href="/stylesheets/style.css"/>
         </head>
         <body>
