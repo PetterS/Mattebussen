@@ -3,47 +3,67 @@ import webapp2
 from urllib import urlopen
 from xml.dom.minidom import parseString
 from datetime import datetime, timedelta, tzinfo
+from google.appengine.api import urlfetch
 
+# Helper class to fetchs URLs asyncronously
+# Starts fetching when created; get_data() blocks 
+# until done
+class GetURL :
+    def __init__(this, url) :
+        this.rpc = urlfetch.create_rpc()
+        urlfetch.make_fetch_call(this.rpc, url)
+    def get_data(this) :
+        result = this.rpc.get_result()
+        #result.status_code == 200
+        return result.content
+    
 class MainPage(webapp2.RequestHandler):
     
-    def get_bus(self, hpl, stop, no, delay) :
-        # Difference from UTC.
-        # This will not work in the winter!
-        swedenoffset = timedelta(hours=2)
-        now = datetime.now() + swedenoffset
-        
-        url = 'http://www.labs.skanetrafiken.se/v2.2/stationresults.asp?selPointFrKey='+str(hpl)
-        data = urlopen(url).read()
-        xml = parseString(data)
-        lines = xml.getElementsByTagName('Lines')[0]
-        best=None
-        for line in lines.getElementsByTagName('Line') :
-            datestr = line.getElementsByTagName('JourneyDateTime')[0].firstChild.data
-            date = datetime.strptime(datestr,'%Y-%m-%dT%H:%M:%S')
-            this_no   = int(line.getElementsByTagName('No')[0].firstChild.data)
-            this_stop =     line.getElementsByTagName('StopPoint')[0].firstChild.data
+    def get_bus(self, url_call, stop, no, delay) :
+        try:
+            # Difference from UTC.
+            # This will not work in the winter!
+            swedenoffset = timedelta(hours=2)
+            now = datetime.now() + swedenoffset
             
-            #self.response.out.write(str((this_no,no)) + ' ' + str(this_stop) + ' ' + str(date - now ) + ' ---- ')
-            #self.response.out.write( str(this_no == no) + ' ' + str(this_stop == stop) + ' ' + str(date - now > delay) + '\n')
-            if this_no == no and this_stop == stop and date - now > delay :
-                # Rätt nummer, rätt läge och den går att hinna till
-                if best is None:
-                    best = date
-                elif date < best:
-                    best = date
-                    
-        return best
+            data = url_call.get_data()
+            xml = parseString(data)
+            lines = xml.getElementsByTagName('Lines')[0]
+            best=None
+            for line in lines.getElementsByTagName('Line') :
+                datestr = line.getElementsByTagName('JourneyDateTime')[0].firstChild.data
+                date = datetime.strptime(datestr,'%Y-%m-%dT%H:%M:%S')
+                this_no   = int(line.getElementsByTagName('No')[0].firstChild.data)
+                this_stop =     line.getElementsByTagName('StopPoint')[0].firstChild.data
+                
+                #self.response.out.write(str((this_no,no)) + ' ' + str(this_stop) + ' ' + str(date - now ) + ' ---- ')
+                #self.response.out.write( str(this_no == no) + ' ' + str(this_stop == stop) + ' ' + str(date - now > delay) + '\n')
+                if this_no == no and this_stop == stop and date - now > delay :
+                    # Rätt nummer, rätt läge och den går att hinna till
+                    if best is None:
+                        best = date
+                    elif date < best:
+                        best = date
+                        
+            return best
+        except:
+            return None
                     
                  
 
     def get(self):
         self.response.headers['Content-Type'] = 'text/html'
         
+        url = 'http://www.labs.skanetrafiken.se/v2.2/stationresults.asp?selPointFrKey='
         lth                       = 81124     
         professorsgatan = 81011
         
-        best171 = self.get_bus(professorsgatan, 'A', 171,  timedelta(minutes=2) )
-        best169 = self.get_bus(lth, 'A', 169,  timedelta(minutes=3))
+        # Start fetching both URLs
+        prof_call = GetURL(url + str(professorsgatan))
+        lth_call = GetURL(url + str(lth))
+        
+        best171 = self.get_bus(prof_call, 'A', 171,  timedelta(minutes=2) )
+        best169 = self.get_bus(lth_call, 'A', 169,  timedelta(minutes=3))
         
         #----------------------------------        
         
