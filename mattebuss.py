@@ -96,16 +96,16 @@ class MainPage(webapp2.RequestHandler):
         <body>
         <div id="vertical">   
         <div id="hoz">
-	<div style="color: #DDDDDD; font-family: Arial; font-size: 20pt; line-height: 20pt; text-align:left"> 
+	<div style="color: #DDDDDD; font-family: Arial; font-size: 25pt; line-height: 20pt; text-align:left"> 
 	''')
 	
-	self.response.out.write('Current time: ' + str(now.strftime('%H:%M')) + '<br/><hr/> ');	
+	self.response.out.write('Current time: <b>' + str(now.strftime('%H:%M')) + '</b><br/><hr/> ');	
 	
 	for num in range(0,min(show_num_options,len(buses))):	
 
 		
 		bus = buses[num];
-		self.response.out.write('''<div style="color: #FFFFFF; font-family: Arial; font-size: 20pt; line-height: 20pt; text-align:left">''')
+		self.response.out.write('''<div style="color: #FFFFFF; font-family: Arial; font-size: 25pt; line-height: 25pt; text-align:left">''')
 
 		if bus[0] == 'lth' :
 			bus_stop =  'Kårhuset';
@@ -113,17 +113,17 @@ class MainPage(webapp2.RequestHandler):
 			bus_stop = 'Professorsgatan';
 	
 		self.response.out.write('From <b>' + bus_stop + '</b> at ' + str(bus[2].strftime('%H:%M')) + ' take bus:');		
-		self.response.out.write(''' <div style="color: #9c6114; font-family: Arial; font-size: 80pt; line-height: 80pt; font-weight: bold;">''');
+		self.response.out.write(''' <div style="color: #9c6114; font-family: Arial; font-size: 100pt; line-height: 100pt; font-weight: bold; text-align:center">''');
 		self.response.out.write(bus[1]);	
 		self.response.out.write('''</div>''') 
 		
         
-       		self.response.out.write('''</div><div style="color: #AAAAAA; font-family: Arial; font-size: 12pt;">''')
+       		self.response.out.write('''</div><div style="color: #AAAAAA; font-family: Arial; font-size: 20pt;">''')
 	
 		marginal = bus[3]-now;
 		
 		
-		self.response.out.write('Estimated marginal is: ' + str(round(marginal.total_seconds(),0)) + ' seconds' ' <br /><br />');			
+		self.response.out.write('Estimated marginal is: <b>' + str(round(marginal.total_seconds(),0)) + ' seconds</b><hr>');			
 		self.response.out.write('</div>');		
 		
        	self.response.out.write('''
