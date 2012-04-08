@@ -3,14 +3,25 @@ import webapp2
 from urllib import urlopen
 from xml.dom.minidom import parseString
 from datetime import datetime, timedelta
+from google.appengine.api import urlfetch
+
+# Helper class to fetchs URLs asyncronously
+# Starts fetching when created; get_data() blocks
+# until done
+class GetURL :
+    def __init__(this, url) :
+        this.rpc = urlfetch.create_rpc()
+        urlfetch.make_fetch_call(this.rpc, url)
+    def get_data(this) :
+        result = this.rpc.get_result()
+        #result.status_code == 200
+        return result.content
 
 class MainPage(webapp2.RequestHandler):
-    
+      	
+    def add_buses(self, buses, url_call, hpl_name, buss_no, stop_point) :	
+        data = url_call.get_data()
 
-  	
-    def add_buses(self, buses, hpl_num, hpl_name, buss_no, stop_point) :
-	url = 'http://www.labs.skanetrafiken.se/v2.2/stationresults.asp?selPointFrKey='+str(hpl_num)
-        data = urlopen(url).read()
         xml = parseString(data)
         lines = xml.getElementsByTagName('Lines')[0]
         for line in lines.getElementsByTagName('Line') :
@@ -35,25 +46,28 @@ class MainPage(webapp2.RequestHandler):
 
 	time_margin = timedelta(seconds=30);
     	time_exit = timedelta(seconds=50); # From office to entrance
-	time_kar = timedelta(seconds=180); # From entrance to kårdhuset.
+	time_lth = timedelta(seconds=180); # From entrance to lth.
 	time_pro = timedelta(seconds=180); # From entrance to professorsgatan
 	
 	time_tease = timedelta(seconds = 60); # Show buses that it's esimtaed you wont catch.
 
-        hpl_kar     = 81124;     # Kårhuset
+        hpl_lth     = 81124;     # Kårhuset
         hpl_pro     = 81011;    # Professorsgatan
+	url = 'http://www.labs.skanetrafiken.se/v2.2/stationresults.asp?selPointFrKey='
+        prof_call = GetURL(url + str(hpl_pro))
+        lth_call = GetURL(url + str(hpl_lth))
 
 	buses =[];
-	buses = self.add_buses(buses, hpl_kar, 'kar', 169, 'A');
-	buses = self.add_buses(buses, hpl_kar, 'kar', 171, 'D');
-	buses = self.add_buses(buses, hpl_pro, 'pro', 171, 'A');
+	buses = self.add_buses(buses, lth_call, 'lth', 169, 'A');
+	buses = self.add_buses(buses, lth_call, 'lth', 171, 'D');
+	buses = self.add_buses(buses, prof_call, 'pro', 171, 'A');
 	       
         # Remove transportation time
 	for item in buses :
 		item[3] -= (time_margin+time_exit);
 		
-		if item[0] == 'kar' :
-			item[3] -= time_kar;
+		if item[0] == 'lth' :
+			item[3] -= time_lth;
 		if item[0] == 'pro' :
 			item[3] -= time_pro;
 
@@ -93,7 +107,7 @@ class MainPage(webapp2.RequestHandler):
 		bus = buses[num];
 		self.response.out.write('''<div style="color: #FFFFFF; font-family: Arial; font-size: 20pt; line-height: 20pt; text-align:left">''')
 
-		if bus[0] == 'kar' :
+		if bus[0] == 'lth' :
 			bus_stop =  'Kårhuset';
 		if bus[0] == 'pro' :
 			bus_stop = 'Professorsgatan';
